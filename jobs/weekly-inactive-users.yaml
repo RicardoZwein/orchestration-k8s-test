@@ -1,0 +1,7 @@
+job_id: weekly-inactive-users
+type: db2-select                       
+query: |
+  SELECT * FROM users 
+  WHERE DAYS_BETWEEN(CURRENT_DATE, last_login) > 7
+output: /data/exports/weekly.csv
+notify: true                             
