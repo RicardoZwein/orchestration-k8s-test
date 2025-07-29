@@ -1,0 +1,4 @@
+ibm_db
+polars
+pyyaml
+python-dotenv

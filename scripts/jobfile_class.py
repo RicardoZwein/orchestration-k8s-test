@@ -115,7 +115,7 @@ class JobFile:
             self.log(f"Successfully inserted job '{self.job_name}' into the database.")
         else:
             self.set_status(None)
-            self.log(f"Warning: No job inserted : {self.job_name} already exists under id {job_id}.", "warnning")
+            self.log(f"Warning: No job inserted : {self.job_name} already exists under id {job_id}.", "warning")
 
         if conn:
             ibm_db.close(conn)
