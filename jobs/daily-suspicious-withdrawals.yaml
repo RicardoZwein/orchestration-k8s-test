@@ -1,0 +1,18 @@
+job_name: daily-suspicious-withdrawals
+type: db2-select
+query: |
+  SELECT 
+    t.transaction_id,
+    u.email,
+    t.amount,
+    t.transaction_date,
+    t.category
+  FROM public.customer_transactions t
+  JOIN public.users u ON t.customer_id = u.id
+  WHERE 
+    t.category = 'withdrawal'
+    AND t.amount > 800
+    AND DAYS_BETWEEN(CURRENT_DATE, t.transaction_date) = 1
+output: exports/daily_suspicious.csv
+schedule: "0 6 * * *"   # Every day at 06:00
+notify: true
