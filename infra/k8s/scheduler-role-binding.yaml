@@ -1,0 +1,13 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: scheduler-binding 
+  namespace: default
+subjects:
+- kind: ServiceAccount
+  name: scheduler-sa
+  namespace: default
+roleRef:
+  kind: Role
+  name: scheduler-role
+  apiGroup: rbac.authorization.k8s.io

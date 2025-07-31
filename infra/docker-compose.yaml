@@ -6,32 +6,20 @@ services:
     container_name: db2-container
     environment:
       - LICENSE=accept
+      - DB2INST1=db2inst1
       - DB2INST1_PASSWORD=passw0rd
+      - DB2FENC1=db2fenc1
+      - DB2FENC1_PASSWORD=passw0rd
       - DBNAME=testdb
     ports:
       - "50000:50000"
-    privileged: true
-    tty: true
-    stdin_open: true
     volumes:
       - db2data:/database
-
-  batchops:
-    build:
-      context: ..
-      dockerfile: infra/Dockerfile
-    container_name: batch-runner
-    depends_on:
-      - db2
-    environment:
-      - CONN_STR=DATABASE=testdb;HOSTNAME=db2;PORT=50000;PROTOCOL=TCPIP;UID=db2inst1;PWD=passw0rd;
-    volumes:
-      - ../jobs:/app/jobs
-      - ../data:/app/data
-      - ../.env:/app/.env
-    working_dir: /app
-    stdin_open: true
+      - ./infra/init_public.sql:/database/config/init_public.sql
+      - ./infra/init_job_mgmt.sql:/database/config/init_job_mgmt.sql
     tty: true
+    stdin_open: true
+    privileged: true  # Required by DB2 setup
 
 volumes:
   db2data:

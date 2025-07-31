@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: db2
+spec:
+  selector:
+    matchLabels:
+      app: db2
+  serviceName: db2
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: db2
+    spec:
+      initContainers:
+        - name: fix-permissions
+          image: busybox
+          command: ["sh", "-c", "chown -R 1000:1000 /database"]
+          volumeMounts:
+            - name: db2data
+              mountPath: /database
+          securityContext:
+            runAsUser: 0
+      containers:
+        - name: db2
+          image: custom-db2
+          imagePullPolicy: Never
+          command: ["/database/config/setup-db2.sh"]
+          env:
+            - name: LICENSE
+              value: "accept"
+            - name: DB2INST1
+              value: "db2inst1"
+            - name: DB2INST1_PASSWORD
+              value: "passw0rd"
+            - name: DB2FENC1
+              value: "db2fenc1"
+            - name: DB2FENC1_PASSWORD
+              value: "passw0rd"
+            - name: DBNAME
+              value: "testdb"
+          volumeMounts:
+            - name: db2data
+              mountPath: /database
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+      volumes:
+        - name: db2data
+          persistentVolumeClaim:
+            claimName: db2data

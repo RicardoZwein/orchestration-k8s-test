@@ -3,6 +3,6 @@ type: db2-select
 query: |
   SELECT * FROM public.users 
   WHERE DAYS_BETWEEN(CURRENT_DATE, last_login) > 7
-output: exports/weekly.csv
+output: weekly.csv
 schedule: "0 5 * * 1"
 notify: true                             

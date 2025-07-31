@@ -1,0 +1,27 @@
+FROM python:3.10-slim
+
+WORKDIR /app
+
+# Copy job execution script and job YAMLs
+COPY entrypoints/runner.py /app/runner.py
+COPY entrypoints/sender.py /app/sender.py
+COPY scripts/sync_jobfiles.py /app/sync_jobfiles.py
+
+COPY jobs/ /app/jobs/
+
+
+# Add the data exports directory
+RUN mkdir -p /app/data/exports
+
+# Copy supporting Python modules and requirements
+COPY scripts/ /app/scripts/
+COPY requirements.txt /app/requirements.txt
+
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r /app/requirements.txt
+
+LABEL purpose="Runs a single job YAML against DB2"
+
+# Sleep until overridden by Kubernetes (or docker run)
+# Example override: ["python", "runner.py", "jobs/daily-suspicious-withdrawals.yaml"]

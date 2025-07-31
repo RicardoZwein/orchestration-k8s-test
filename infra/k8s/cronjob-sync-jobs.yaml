@@ -1,0 +1,22 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata: 
+  name: cronjob-sync-jobs 
+spec: 
+  schedule: "*/1 * * * *" 
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: runner
+            image: batch-runner:latest
+            imagePullPolicy: Never
+            command: ["python", "sync_jobfiles.py"]
+            env:
+            - name: CONN_STR
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: conn_str
+          restartPolicy: Never

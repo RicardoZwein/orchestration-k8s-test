@@ -1,0 +1,24 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: cronjob-sync-cronjobs
+spec:
+  schedule: "*/2 * * * *"  # Every 2 minutes
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: scheduler
+            image: db-scheduler:latest
+            imagePullPolicy: Never
+            command: ["python", "db_scheduler.py"]
+            env:
+            - name: CONN_STR
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: conn_str
+            - name: RUNNER_IMAGE
+              value: batch-runner:latest
+          restartPolicy: Never

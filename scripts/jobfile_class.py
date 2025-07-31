@@ -148,7 +148,7 @@ class JobFile:
         if conn:
             ibm_db.close(conn)
 
-    def run(self, conn_str=conn_str, output_dir="data"):
+    def run(self, conn_str=conn_str,  output_dir="/app/data/exports"):
         self.start_time = time.time()
         start_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(self.start_time))
         self.set_status("RUNNING")

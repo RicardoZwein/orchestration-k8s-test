@@ -1,0 +1,18 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: sync-batch-cronjobs
+spec:
+  template:
+    spec:
+      serviceAccountName: scheduler-sa
+      containers:
+      - name: db-scheduler
+        image: db-scheduler:latest
+        imagePullPolicy: Never
+        command: ["python", "scripts/db_scheduler.py"]
+        env:
+        - name: CONN_STR
+          value: "DATABASE=testdb;HOSTNAME=host.docker.internal;PORT=50000;PROTOCOL=TCPIP;UID=db2inst1;PWD=passw0rd;"
+
+      restartPolicy: Never
