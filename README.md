@@ -4,7 +4,7 @@ This side project was a hands-on exercise to get more familiar with container or
 
 It also gave me the chance to brush up on PowerShell, Bash, and so on.
 
-While definitely not production-grade, the system is functional and educational...It also could be a decent foundation for more structured CI/CD and monitoring later on, if I feel like reworking it or you want to fork that for some reason.
+While definitely not production-grade, the system is functional and educational...It also could be a decent foundation for CI/CD and Prometheus & Grafana monitoring later on, if I feel like reworking it or you want to fork that for some reason.
 
 ---
 
