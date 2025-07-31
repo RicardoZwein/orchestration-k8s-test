@@ -46,7 +46,7 @@ The only reason this is published at all is because my teachers usually tell me 
 
 ## ⚠️ Disclaimer
 
-This was built on vacation as a personal learning tool. Some parts are quite messy, unsafe for production, or hardcoded. I focused on understanding the tooling for now, not delivering production-ready infra. That said, feel free to dig in or suggest improvements. *There's a lot to unpack, I know...*
+This was built on vacation as a personal learning tool. Some parts are quite messy, unsafe for production, or hardcoded. There are even some files left that likley are not of use anymore. I focused on understanding the tooling for now, not delivering production-ready infra, or cleaning up all my files. That said, feel free to dig in. 
 
 Published mainly because my teachers tell me: *"Put everything on GitHub."* So... here we are. They likely expected a more professional voice, which I can definitely do at work...Or for a bigger public-facing project.
 
