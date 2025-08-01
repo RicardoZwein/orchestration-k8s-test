@@ -8,6 +8,7 @@ spec:
     spec:
       template:
         spec:
+          serviceAccountName: scheduler-sa
           containers:
           - name: scheduler
             image: db-scheduler:latest

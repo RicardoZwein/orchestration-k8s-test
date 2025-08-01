@@ -23,6 +23,7 @@ Get-Content .env | ForEach-Object {
     }
 }
 
+
 # Make sure Minikube is running
 $minikubeStatus = & minikube status --format '{{.Host}}'
 if ($minikubeStatus -ne "Running") {
@@ -30,24 +31,30 @@ if ($minikubeStatus -ne "Running") {
     & minikube start
 }
 
-# Cleanup jobs and cronjobs
-Write-Host "Deleting all jobs and cronjobs..."
-kubectl delete job --all --ignore-not-found
-kubectl delete cronjob --all --ignore-not-found
+# Rebuild and reload runner
+Write-Host "Rebuilding batch-runner image..."
+docker build --no-cache -t batch-runner:latest -f infra/dockerfile.runner .
+minikube image load batch-runner:latest
+
+
+# Rebuild and reload scheduler
+Write-Host "Rebuilding scheduler image..."
+docker build --no-cache -t $env:SCHEDULER_IMAGE -f infra/dockerfile.scheduler .
+minikube image load $env:SCHEDULER_IMAGE
+
 
 # Set Docker environment for Minikube
 Write-Host "Setting Docker environment for Minikube..."
 & minikube docker-env | Invoke-Expression
 
-# Rebuild and reload runner
-Write-Host "Rebuilding batch-runner image..."
-docker build -t batch-runner:latest -f infra/dockerfile.runner .
-minikube image load batch-runner:latest
+# Apply RBAC resources first
+Write-Host "Applying RBAC resources..."
+kubectl apply -f infra/k8s/scheduler-service-account.yaml
+kubectl apply -f infra/k8s/scheduler-role.yaml  
+kubectl apply -f infra/k8s/scheduler-role-binding.yaml
 
-# Rebuild and reload scheduler
-Write-Host "Rebuilding scheduler image..."
-docker build -t $env:SCHEDULER_IMAGE -f infra/dockerfile.scheduler .
-minikube image load $env:SCHEDULER_IMAGE
+# Give RBAC a moment to propagate
+Start-Sleep -Seconds 5
 
 # Apply db-credentials secret
 Write-Host "Applying DB credentials secret..."
@@ -71,6 +78,22 @@ if ($schedulerPod) {
 
 # Trigger one-time sync_jobfiles.py to update DB from jobs/*.yaml
 Write-Host "`nRunning sync_jobfiles.py..."
-kubectl run sync-jobfiles-now --rm -i --restart=Never --image=batch-runner:latest --image-pull-policy=Never --env="CONN_STR=$env:CONN_STR" -- python sync_jobfiles.py
+kubectl apply -f infra/k8s/temp-sync-jobs.yaml
+
+# Wait for job completion
+Write-Host "Waiting for sync job to complete..."
+kubectl wait --for=condition=complete job/sync-jobfiles-now --timeout=300s
+
+# Show logs
+$syncPod = kubectl get pods --selector=job-name=sync-jobfiles-now -o jsonpath="{.items[0].metadata.name}" 2>$null
+if ($syncPod) {
+    Write-Host "`nLogs from sync_jobfiles.py:"
+    kubectl logs $syncPod
+} else {
+    Write-Warning "No pod found for the sync job."
+}
+
+# Cleanup
+kubectl delete job sync-jobfiles-now
 
 Write-Host "`nDone."

@@ -8,6 +8,7 @@ spec:
     spec:
       template:
         spec:
+          serviceAccountName: scheduler-sa
           containers:
           - name: runner
             image: batch-runner:latest

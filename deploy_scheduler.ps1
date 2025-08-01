@@ -23,7 +23,7 @@ Get-Content .env | ForEach-Object {
 
 # Build and load runner image
 Write-Host "Building runner image on host Docker..."
-docker build -t batch-runner:latest -f infra/dockerfile.runner .
+docker build --no-cache -t batch-runner:latest -f infra/dockerfile.runner .
 Write-Host "Loading runner image into Minikube..."
 minikube image load batch-runner:latest
 
@@ -33,7 +33,7 @@ kubectl config use-context minikube | Out-Null
 
 # Build and load scheduler image
 Write-Host "Building scheduler image on host Docker..."
-docker build -t $env:SCHEDULER_IMAGE -f infra/dockerfile.scheduler .
+docker build --no-cache -t $env:SCHEDULER_IMAGE -f infra/dockerfile.scheduler .
 Write-Host "Loading scheduler image into Minikube..."
 minikube image load $env:SCHEDULER_IMAGE
 
@@ -61,6 +61,13 @@ if (-not $pvcExists) {
 # Apply DB credentials
 Write-Host "Applying DB credentials secret..."
 kubectl apply -f infra/k8s/db-credentials-secret.yaml
+
+# Apply service account and RBAC permissions
+Write-Host "Applying scheduler ServiceAccount, Role, and RoleBinding..."
+kubectl apply -f infra/k8s/scheduler-service-account.yaml
+kubectl apply -f infra/k8s/scheduler-role.yaml
+kubectl apply -f infra/k8s/scheduler-role-binding.yaml
+
 
 # Apply scheduler job
 Write-Host "Applying db-scheduler-job.yaml..."

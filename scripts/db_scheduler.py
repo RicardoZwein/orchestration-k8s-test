@@ -99,7 +99,7 @@ spec:
     existing_cronjobs = set(kubectl_output.strip().split())
 
     for name in existing_cronjobs:
-        if name not in active_cronjobs:
+        if name not in all_cronjobs_from_db:
             print(f"🗑️ Deleting disabled or orphaned CronJob: {name}")
             subprocess.run(["kubectl", "delete", "cronjob", name], check=True)
 
