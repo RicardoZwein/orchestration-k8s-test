@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+
+  fastapi-exporter:
+    build:
+      context: ./exporter
+      dockerfile: Dockerfile
+    container_name: fastapi-exporter
+    ports:
+      - "9123:9123"
+    restart: unless-stopped
+    environment:
+      - CONN_STR=DATABASE=testdb;HOSTNAME=host.docker.internal;PORT=50000;PROTOCOL=TCPIP;UID=db2inst1;PWD=passw0rd;
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - "3333:3000"
+    restart: unless-stopped
