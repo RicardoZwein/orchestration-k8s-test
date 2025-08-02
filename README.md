@@ -4,7 +4,7 @@ This side project was a hands-on exercise to get more familiar with container or
 
 It also gave me the chance to brush up on PowerShell, Bash, and so on.
 
-While definitely not production-grade, the system is functional and educational. It could even be a decent foundation for CI/CD, or Prometheus & Grafana monitoring — if I feel like reworking it, or *you* want to fork that for some reason.
+While definitely not production-grade, the system is functional and educational. It could even be a decent foundation for CI/CD, or a Grafana Dashboard - if I feel like reworking it, or *you* want to fork that for some reason.
 
 ---
 
@@ -34,6 +34,9 @@ While definitely not production-grade, the system is functional and educational.
    ```powershell
    run_full_sync.ps1
    ```
+
+### Extra :
+You can now run Prometheus and Grafana! Just cd your way into `Prometheus/` and call `start_exporter.ps1`, then `docker compose up --build`. Just make sure ports 9123, 3333, and 9090 are free. Otherwise, still inside Prometheus/, please do change the used ports for  `start_exporter.ps1` and/or `docker-compose.yml` in said files' content. There is no Grafana dashboard set up (yet?) though.
 
    This will sync your current YAML job files into the cluster.
    It also replaces existing CronJobs and updates job activation based on whether the YAMLs are present in the `jobs/` folder.
