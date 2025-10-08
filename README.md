@@ -48,10 +48,6 @@ You can now run Prometheus and Grafana! Just cd your way into `Prometheus/` and 
 
 ---
 
-The only reason this is published at all is because my teachers usually tell me to add anything I make to my GitHub account and I happened to have enough free time to do this.
-
----
-
 ## ⚠️ Disclaimer
 
 This was built on vacation as a personal learning tool.
